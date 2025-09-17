@@ -1,0 +1,8 @@
+transformers
+langgraph
+langchain
+transformers
+torch           # required for Hugging Face models
+langgraph
+langchain
+yfinance

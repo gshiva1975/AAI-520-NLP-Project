@@ -23,10 +23,10 @@ uv pip install -r requirements.txt
 uv pip freeze > requirements.txt
 
  Run the Server
-uv run python server.py
+uv run python server.py [ on terminal 1 ]
 
  Run Tests
-uv run python test_server.py
+uv run python test_server.py [ on terminal 2 ]
 
 
 Or directly with Python:

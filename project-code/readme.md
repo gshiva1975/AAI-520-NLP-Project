@@ -1,6 +1,10 @@
 setup environment
 =================
 
+**install uv **
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+
 uv venv --python 3.11
 
 source .venv/bin/activate   # macOS/Linux

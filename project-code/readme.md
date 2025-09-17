@@ -1,3 +1,22 @@
+setup environment
+=================
+
+uv venv --python 3.11
+
+source .venv/bin/activate   # macOS/Linux
+
+uv pip install -r requirements.txt
+
+uv pip freeze > requirements.txt
+
+uv run python server.py
+uv run python test_server.py
+
+
+
+
+
+================================================================
 (sep16) gshiva@Gangadhars-MacBook-Pro sep16 % python ./test-server.py
 === Running Investment+Sentiment+News Tests ===
 

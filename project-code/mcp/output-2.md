@@ -12,7 +12,7 @@
 
 ---
 
-## 📰 Latest News Headlines
+##  Latest News Headlines
 
 ### 1.  **Analyst Optimism**
 > **"Microsoft Stock (MSFT) Seen Delivering Strong Total Returns, Analyst Notes"**  
@@ -22,7 +22,7 @@
 > **"MSFT Stock Looks Set to Rejoin the $4 Trillion Club as Microsoft Gets More Ambitious With AI"**  
 > *Source: Barchart.com*
 
-### 3. ⚠ **Internal Challenges**
+### 3.  **Internal Challenges**
 > **"Microsoft Stock (NASDAQ:MSFT) Gains: Morale at an 'All-Time Low'"**  
 > *Source: TipRanks*
 

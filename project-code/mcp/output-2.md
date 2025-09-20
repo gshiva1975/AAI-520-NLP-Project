@@ -36,7 +36,7 @@
 
 ---
 
-## 🎭 Sentiment Analysis
+##  Sentiment Analysis
 
 ### Overall Market Sentiment
 ```
@@ -45,7 +45,7 @@ Confidence Score: 89.2%
 Risk Assessment: HIGH
 ```
 
-### 📊 Sentiment Breakdown
+###  Sentiment Breakdown
 
 | Aspect | Rating |
 |--------|--------|
@@ -135,6 +135,6 @@ Microsoft presents a fascinating investment contradiction:
 
 ---
 
-### 📋 **Key Takeaway**
+###  **Key Takeaway**
 
 While Microsoft maintains strong long-term AI potential and analyst confidence, the significant negative sentiment (89.2%) suggests investors should approach with caution until execution challenges and internal issues are resolved.

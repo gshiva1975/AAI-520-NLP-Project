@@ -1,4 +1,4 @@
-Use Claude UI and installe mcp server.
+Use Claude UI and install mcp server.
 
 Installation
 

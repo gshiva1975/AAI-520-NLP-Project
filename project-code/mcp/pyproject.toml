@@ -12,6 +12,12 @@ dependencies = [
     "fastmcp",
     "pytoml",
     "feedparser>=6.0.10",
+    "langgraph",
+    "langchain",
+    "langchain-community",
+    "langchain_huggingface",
+    "matplotlib",
+    "duckduckgo-search"
 ]
 
 [tool.uv]

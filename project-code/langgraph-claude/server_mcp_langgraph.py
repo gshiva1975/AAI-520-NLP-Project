@@ -175,8 +175,25 @@ mcp.tool(analyze_stock)
 # -----------------------
 if __name__ == "__main__":
     import sys
+
+    # Run test mode: analyze multiple companies
     if len(sys.argv) > 1 and sys.argv[1] == "test":
-        print(json.dumps(_analyze_stock_impl("TSLA"), indent=2))
+        companies = ["AAPL", "TSLA", "MSFT", "GOOGL", "AMZN"]  # top 5 test tickers
+        results = {}
+
+        for ticker in companies:
+            print(f"\n[TEST] Running analysis for {ticker}")
+            try:
+                result = _analyze_stock_impl(ticker, max_headlines=5)
+                results[ticker] = result
+            except Exception as e:
+                results[ticker] = {"error": str(e)}
+                print(f"[ERROR] {ticker} -> {e}")
+
+        print("\n[TEST RESULTS]")
+        print(json.dumps(results, indent=2))
+
     else:
+        # Run as MCP server with stdio transport
         mcp.run(transport="stdio")
 

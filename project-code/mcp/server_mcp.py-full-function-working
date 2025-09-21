@@ -1,0 +1,364 @@
+import os
+import json
+import re
+from datetime import datetime
+from collections import Counter
+import urllib.parse
+
+import yfinance as yf
+import feedparser
+
+from transformers import pipeline
+from fastmcp import FastMCP
+
+# ----------------------------------------------------------------------------
+# Pipelines (load once)
+# ----------------------------------------------------------------------------
+mcp = FastMCP("investment-analysis-agent")
+
+# Generation model (Flan-T5) and FinBERT for finance sentiment
+try:
+    generator = pipeline("text2text-generation", model="google/flan-t5-base")
+except Exception as e:
+    generator = None
+    print(f"[WARN] Text generator unavailable: {e}")
+
+try:
+    sentiment_analyzer = pipeline("sentiment-analysis", model="ProsusAI/finbert")
+except Exception as e:
+    sentiment_analyzer = None
+    print(f"[WARN] FinBERT sentiment unavailable: {e}")
+
+# ----------------------------------------------------------------------------
+# Helpers (memory + text generation)
+# ----------------------------------------------------------------------------
+
+MEMORY_FILE = "agent_memory.json"
+
+def _load_memory():
+    if os.path.exists(MEMORY_FILE):
+        try:
+            with open(MEMORY_FILE, "r") as f:
+                return json.load(f)
+        except Exception:
+            return {}
+    return {}
+
+def _save_memory(mem):
+    try:
+        with open(MEMORY_FILE, "w") as f:
+            json.dump(mem, f, indent=2)
+    except Exception as e:
+        print(f"[WARN] Could not save memory: {e}")
+
+def remember(symbol: str, key: str, value):
+    mem = _load_memory()
+    mem.setdefault(symbol.upper(), {})[key] = value
+    _save_memory(mem)
+
+def recall(symbol: str):
+    mem = _load_memory()
+    return mem.get(symbol.upper(), {})
+
+def hf_generate(prompt: str, max_new_tokens: int = 256) -> str:
+    if generator is None:
+        # Fallback: return prompt tail with a heuristic 'summary'
+        return "Summary: " + prompt[:400] + ("..." if len(prompt) > 400 else "")
+    out = generator(prompt, max_new_tokens=max_new_tokens)
+    return out[0]["generated_text"]
+
+# ----------------------------------------------------------------------------
+# Core tools
+# ----------------------------------------------------------------------------
+
+def get_stock_price(ticker: str):
+    try:
+        stock = yf.Ticker(ticker)
+        hist = stock.history(period="5d")
+        if hist.empty:
+            return {"error": f"No data for {ticker}"}
+        last_close = hist["Close"].iloc[-1]
+        prev_close = hist["Close"].iloc[-2] if len(hist) > 1 else last_close
+        change = ((last_close - prev_close) / prev_close) * 100 if prev_close else 0
+        return {
+            "ticker": ticker.upper(),
+            "last_close": round(float(last_close), 2),
+            "daily_change_pct": round(change, 2)
+        }
+    except Exception as e:
+        return {"error": f"Price fetch failed: {e}"}
+
+def get_news(ticker: str, limit: int = 8):
+    results = []
+
+    # Try Yahoo Finance first
+    try:
+        stock = yf.Ticker(ticker)
+        news_items = getattr(stock, "news", None)
+        if news_items:
+            for n in news_items[:limit]:
+                title = n.get("title")
+                link = n.get("link")
+                if title and link:
+                    results.append({"title": title, "link": link})
+    except Exception as e:
+        print(f"[WARN] Yahoo Finance news failed: {e}")
+
+    # Fallback to Google News RSS
+    if not results:
+        try:
+            query = f"{ticker} stock"
+            encoded_query = urllib.parse.quote(query)
+            rss_url = f"https://news.google.com/rss/search?q={encoded_query}"
+            feed = feedparser.parse(rss_url)
+            for entry in feed.entries[:limit]:
+                results.append({"title": entry.title, "link": entry.link})
+        except Exception as e:
+            print(f"[ERROR] Google News fallback failed: {e}")
+
+    if not results:
+        results = [{"title": "No news available", "link": None}]
+
+    return results
+
+def preprocess_news(items):
+    seen = set()
+    cleaned = []
+    for it in items:
+        title = (it.get("title") or "").strip()
+        key = re.sub(r"\s+", " ", title.lower())
+        if title and key not in seen:
+            seen.add(key)
+            cleaned.append({"title": title, "link": it.get("link")})
+    return cleaned
+
+def classify_news(items):
+    if not sentiment_analyzer:
+        return [{"title": it["title"], "link": it["link"], "sentiment": {"label": "neutral", "score": 0.0}} for it in items]
+
+    out = []
+    for it in items:
+        try:
+            res = sentiment_analyzer(it["title"])[0]
+            out.append({
+                "title": it["title"],
+                "link": it["link"],
+                "sentiment": {"label": res["label"], "score": float(res["score"])}
+            })
+        except Exception as e:
+            out.append({
+                "title": it["title"],
+                "link": it["link"],
+                "sentiment": {"label": "neutral", "score": 0.0, "error": str(e)}
+            })
+    return out
+
+STOPWORDS = set("""
+a an the for to of on in and or if with from by about as is are was were be been being it its their his her your our they we you i this that these those into over under during at after before more most less least
+stock shares company microsoft apple google tesla inc corp co ltd announces says reports report analysts analyst investors market markets wall street
+""".split())
+
+def extract_signals(items):
+    counts = Counter()
+    pos = neg = neu = 0
+    scores = []
+
+    for it in items:
+        label = (it.get("sentiment", {}).get("label") or "neutral").lower()
+        score = float(it.get("sentiment", {}).get("score", 0.0))
+        if label.startswith("pos"):
+            pos += 1; scores.append(score)
+        elif label.startswith("neg"):
+            neg += 1; scores.append(-score)
+        else:
+            neu += 1
+
+        words = re.findall(r"[A-Za-z']+", it["title"].lower())
+        for w in words:
+            if w not in STOPWORDS and len(w) > 2:
+                counts[w] += 1
+
+    total = max(1, pos + neg + neu)
+    avg_sent = (sum(scores) / len(scores)) if scores else 0.0
+    top_keywords = [w for w, _ in counts.most_common(12)]
+
+    return {
+        "sentiment_breakdown": {"positive": pos, "negative": neg, "neutral": neu},
+        "avg_sentiment": round(avg_sent, 3),
+        "top_keywords": top_keywords
+    }
+
+# ----------------------------------------------------------------------------
+# Routing specialists
+# ----------------------------------------------------------------------------
+
+def route_specialist(items):
+    titles = " ".join(it["title"].lower() for it in items)
+    if any(kw in titles for kw in ["earnings", "guidance", "eps", "revenue"]):
+        return "earnings"
+    if any(kw in titles for kw in ["lawsuit", "regulator", "ftc", "doj", "antitrust", "investigation"]):
+        return "risk"
+    return "news"
+
+def earnings_analyzer(symbol, items):
+    prompt = f"""You are an equity research analyst. Summarize the earnings-related headlines for {symbol}.
+    Headlines:
+    {json.dumps([it['title'] for it in items], indent=2)}
+    """
+    summary = hf_generate(prompt, max_new_tokens=180)
+    return {"type": "earnings", "summary": summary}
+
+def risk_analyzer(symbol, items):
+    prompt = f"""You are a risk analyst. Summarize potential regulatory/legal risks for {symbol}.
+    Headlines:
+    {json.dumps([it['title'] for it in items], indent=2)}
+    """
+    summary = hf_generate(prompt, max_new_tokens=180)
+    return {"type": "risk", "summary": summary}
+
+def news_analyzer(symbol, items, signals):
+    prompt = f"""You are a markets analyst. Given these headlines for {symbol}, write 5 bullets + a 2-sentence outlook.
+    Consider sentiment breakdown {signals}.
+    Headlines:
+    {json.dumps([it['title'] for it in items], indent=2)}
+    """
+    summary = hf_generate(prompt, max_new_tokens=220)
+    return {"type": "news", "summary": summary}
+
+# ----------------------------------------------------------------------------
+# Evaluator–Optimizer
+# ----------------------------------------------------------------------------
+
+def evaluate_quality(symbol, draft_text):
+    rubric = f"""Evaluate this stock analysis for {symbol} (0–10 score).
+    Criteria: factuality, coverage, clarity, actionability.
+    Provide numeric score and 3 fixes.
+    Analysis:
+    {draft_text}
+    """
+    critique = hf_generate(rubric, max_new_tokens=180)
+    return {"critique": critique}
+
+def optimize_with_feedback(symbol, draft_text, critique_text):
+    prompt = f"""Revise the analysis for {symbol} using the critique.
+    Keep under 180 words, bullets + outlook.
+    Draft:
+    {draft_text}
+
+    Critique:
+    {critique_text}
+    """
+    return hf_generate(prompt, max_new_tokens=220)
+
+# ----------------------------------------------------------------------------
+# Agent orchestration
+# ----------------------------------------------------------------------------
+
+def plan_research(symbol):
+    mem = recall(symbol)
+    memory_hint = json.dumps(mem) if mem else "no prior notes"
+    steps = [
+        "Fetch latest price and headlines",
+        "Preprocess headlines",
+        "Classify sentiment (FinBERT)",
+        "Extract signals (sentiment + keywords)",
+        "Route to specialist",
+        "Draft analysis",
+        "Evaluate and refine",
+        "Update memory"
+    ]
+    plan_text = hf_generate(
+        f"Make a numbered plan for researching {symbol}. Prior memory: {memory_hint}. Steps: {steps}",
+        max_new_tokens=140
+    )
+    return plan_text or "\n".join(f"{i+1}. {s}" for i, s in enumerate(steps))
+
+def research(symbol: str, max_headlines: int = 8):
+    symbol = symbol.upper()
+    plan = plan_research(symbol)
+
+    price = get_stock_price(symbol)
+    raw_news = get_news(symbol, limit=max_headlines)
+    cleaned = preprocess_news(raw_news)
+    classified = classify_news(cleaned)
+    signals = extract_signals(classified)
+    route = route_specialist(classified)
+
+    if route == "earnings":
+        specialist = earnings_analyzer(symbol, classified)
+    elif route == "risk":
+        specialist = risk_analyzer(symbol, classified)
+    else:
+        specialist = news_analyzer(symbol, classified, signals)
+
+    draft = f"""# {symbol} Research Note ({datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')})
+
+**Price**: {price}
+
+**Signals**: {json.dumps(signals)}
+
+**Headlines**:
+{json.dumps([{'title': it['title'], 'sentiment': it.get('sentiment')} for it in classified], indent=2)}
+
+**Specialist Analysis ({specialist['type']})**:
+{specialist.get('summary')}
+"""
+
+    eval_res = evaluate_quality(symbol, draft)
+    refined = optimize_with_feedback(symbol, draft, eval_res["critique"])
+
+    # Update memory
+    remember(symbol, "avg_sentiment", signals.get("avg_sentiment"))
+    remember(symbol, "top_keywords", signals.get("top_keywords"))
+    remember(symbol, "last_route", route)
+    remember(symbol, "last_updated", datetime.utcnow().isoformat())
+
+    return {
+        "symbol": symbol,
+        "plan": plan,
+        "route": route,
+        "price": price,
+        "signals": signals,
+        "headlines": [{"title": it["title"], "link": it["link"], "sentiment": it.get("sentiment")} for it in classified],
+        "draft": draft,
+        "evaluation": eval_res,
+        "final_analysis": refined,
+        "memory": recall(symbol)
+    }
+
+# ----------------------------------------------------------------------------
+# MCP tools
+# ----------------------------------------------------------------------------
+
+@mcp.tool()
+def research_plan(ticker: str):
+    """Return the agent's planned research steps for the given ticker."""
+    return {"ticker": ticker.upper(), "plan": plan_research(ticker)}
+
+@mcp.tool()
+def analyze_stock(ticker: str, max_headlines: int = 8):
+    """Run the full autonomous research workflow and return results."""
+    return research(ticker, max_headlines=max_headlines)
+
+@mcp.tool()
+def agent_memory_get(ticker: str | None = None):
+    """Get saved agent memory (all symbols or one)."""
+    if ticker:
+        return {ticker.upper(): recall(ticker)}
+    return _load_memory()
+
+@mcp.tool()
+def agent_memory_clear(ticker: str | None = None):
+    """Clear memory for a ticker (or all if None)."""
+    if ticker:
+        mem = _load_memory()
+        mem.pop(ticker.upper(), None)
+        _save_memory(mem)
+        return {"cleared": ticker.upper()}
+    else:
+        _save_memory({})
+        return {"cleared": "ALL"}
+
+if __name__ == "__main__":
+    mcp.run(transport="stdio")
+

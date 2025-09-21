@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "investment-analysis": {
+      "command": "uv",
+      "args": ["run", "python", "server_mcp.py"]
+    }
+  }
+}
+

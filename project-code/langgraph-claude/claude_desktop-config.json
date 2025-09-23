@@ -1,9 +1,15 @@
 {
   "mcpServers": {
-    "investment-analysis": {
-      "command": "uv",
-      "args": ["run", "python", "server_mcp.py"]
-    }
+    "mcp-trainer": {
+      "command": "/bin/bash",
+      "args": [
+        "-lc",
+        "cd /Users/gshiva/sep16/mcp && uv run server_mcp.py"
+      ],
+      "env": {
+        "UV_PYTHON": "python3"
+      }
   }
 }
 
+}

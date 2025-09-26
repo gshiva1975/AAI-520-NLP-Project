@@ -1,0 +1,205 @@
+import os
+import json
+import yfinance as yf
+import feedparser
+from datetime import datetime
+from transformers import pipeline
+from langchain_community.llms import HuggingFacePipeline
+from langchain.prompts import PromptTemplate
+from langgraph.graph import StateGraph, END
+from fastmcp import FastMCP
+from rich.console import Console
+
+# -----------------------
+# Setup HuggingFace LLM
+# -----------------------
+generator_pipeline = pipeline(
+    "text-generation",
+    model="google/flan-t5-base",
+    device=0 if os.environ.get("DEVICE", "mps") == "mps" else -1,
+    max_new_tokens=256,
+)
+generator = HuggingFacePipeline(pipeline=generator_pipeline)
+
+# Sentiment pipeline
+sentiment_pipeline = pipeline("sentiment-analysis")
+
+# MCP Server
+mcp = FastMCP("investment-analysis-langgraph")
+
+# -----------------------
+# Helper Functions
+# -----------------------
+def fetch_price_and_history(ticker: str):
+    try:
+        stock = yf.Ticker(ticker)
+        hist = stock.history(period="1y")
+        if hist.empty:
+            return None, None
+
+        last_close = hist["Close"].iloc[-1]
+        prev_close = hist["Close"].iloc[-2] if len(hist) > 1 else last_close
+        daily_change_pct = ((last_close - prev_close) / prev_close) * 100 if prev_close else 0
+
+        history = {
+            "1 Day": {"start": float(prev_close), "end": float(last_close)},
+            "1 Week": {"start": float(hist["Close"].iloc[-5]), "end": float(last_close)} if len(hist) >= 5 else None,
+            "1 Month": {"start": float(hist["Close"].iloc[-22]), "end": float(last_close)} if len(hist) >= 22 else None,
+            "1 Year": {"start": float(hist["Close"].iloc[0]), "end": float(last_close)},
+        }
+
+        return {
+            "ticker": ticker.upper(),
+            "last_close": float(last_close),
+            "daily_change_pct": round(float(daily_change_pct), 2),
+        }, history
+    except Exception as e:
+        print(f"[WARN] Price fetch failed: {e}")
+        return None, None
+
+def fetch_pe_ratio(ticker: str):
+    try:
+        stock = yf.Ticker(ticker)
+        return float(stock.info.get("trailingPE", "N/A"))
+    except Exception:
+        return "N/A"
+
+def fetch_news(ticker: str, max_headlines=5):
+    try:
+        url = f"https://news.google.com/rss/search?q={ticker}+stock"
+        feed = feedparser.parse(url)
+        articles = [{"title": entry.title, "link": entry.link} for entry in feed.entries[:max_headlines]]
+        return articles if articles else [{"title": f"No recent news for {ticker}", "link": None}]
+    except Exception as e:
+        print(f"[WARN] RSS fetch failed: {e}")
+        return [{"title": f"No recent news for {ticker}", "link": None}]
+
+def classify_sentiment(news_items):
+    results = []
+    for item in news_items:
+        text = item["title"]
+        sentiment = sentiment_pipeline(text)[0]
+        results.append({
+            "title": text,
+            "sentiment": sentiment["label"].lower(),
+            "score": float(sentiment["score"]),
+        })
+    return results
+
+def hf_generate(prompt: str, max_new_tokens=256):
+    try:
+        return generator(prompt, max_new_tokens=max_new_tokens)
+    except Exception as e:
+        print(f"[WARN] Generation failed: {e}")
+        return f"[GENERATION FAILED] {prompt[:100]}"
+
+# -----------------------
+# LangGraph Workflow
+# -----------------------
+def build_graph(ticker: str, max_headlines=5):
+    graph = StateGraph(dict)
+
+    # --- Nodes ---
+    def fetch_node(state):
+        price, history = fetch_price_and_history(ticker)
+        pe_ratio = fetch_pe_ratio(ticker)
+        news = fetch_news(ticker, max_headlines=max_headlines)
+        state.update({"price": price, "history": history, "pe_ratio": pe_ratio, "news": news})
+        return state
+
+    def sentiment_node(state):
+        state["sentiment"] = classify_sentiment(state["news"])
+        return state
+
+    def draft_node(state):
+        headlines_text = "\n".join([n["title"] for n in state["news"]])
+        prompt = f"Draft a short stock analysis for {ticker} based on these headlines:\n{headlines_text}"
+        state["draft"] = hf_generate(prompt, max_new_tokens=200)
+        return state
+
+    def critique_node(state):
+        draft = state.get("draft", "No draft")
+        prompt = f"Critique the following stock analysis for {ticker}:\n{draft}"
+        state["critique"] = hf_generate(prompt, max_new_tokens=150)
+        return state
+
+    def final_node(state):
+        draft = state.get("draft", "No draft")
+        critique = state.get("critique", "No critique")
+        prompt = f"Refine the draft with this critique for {ticker}:\nDraft: {draft}\nCritique: {critique}"
+        state["final"] = hf_generate(prompt, max_new_tokens=200)
+        state["recommendation"] = (
+            "Buy - positive sentiment and upward trend"
+            if any(s["sentiment"] == "positive" for s in state.get("sentiment", []))
+            else "Hold - mixed or neutral signals"
+        )
+        return state
+
+    # --- Graph edges ---
+    graph.add_node("fetch", fetch_node)
+    graph.add_node("sentiment", sentiment_node)
+    graph.add_node("draft", draft_node)
+    graph.add_node("critique", critique_node)
+    graph.add_node("final", final_node)
+
+    graph.set_entry_point("fetch")
+    graph.add_edge("fetch", "sentiment")
+    graph.add_edge("sentiment", "draft")
+    graph.add_edge("draft", "critique")
+    graph.add_edge("critique", "final")
+    graph.add_edge("final", END)
+
+    return graph.compile()
+
+# -----------------------
+# Core Analysis
+# -----------------------
+def _analyze_stock_impl(ticker: str, max_headlines=5):
+    print(f"================================================\n\n")
+    print(f"[START] Running analysis for {ticker}")
+    workflow = build_graph(ticker, max_headlines)
+    state = workflow.invoke({})
+    state["memory"] = {"last_run": datetime.utcnow().isoformat()}
+    print(f"[END] Finished analysis for {ticker}")
+    print(f"================================================\n\n")
+    return state
+
+# -----------------------
+# MCP Tool
+# -----------------------
+def analyze_stock(ticker: str, max_headlines: int = 5):
+    """Run the full LangGraph-based research workflow."""
+    return _analyze_stock_impl(ticker, max_headlines=max_headlines)
+
+mcp.tool(analyze_stock)
+
+# -----------------------
+# Entrypoint
+# -----------------------
+if __name__ == "__main__":
+    import sys
+
+    # Run test mode: analyze multiple companies
+    if len(sys.argv) > 1 and sys.argv[1] == "agentic":
+        companies = ["AAPL", "TSLA", "MSFT", "GOOGL", "AMZN"]  # top 5 test tickers
+        results = {}
+
+        for ticker in companies:
+            print(f"\n[ Agentic AI ] Running analysis for {ticker}")
+            try:
+                result = _analyze_stock_impl(ticker, max_headlines=5)
+                results[ticker] = result
+            except Exception as e:
+                results[ticker] = {"error": str(e)}
+                print(f"[ERROR] {ticker} -> {e}")
+
+        print("\n[TEST RESULTS]")
+        console = Console()
+        console.rule("[bold cyan]TEST RESULTS")
+        #print(json.dumps(results, indent=2))
+        console.print_json(data=results, indent=2, sort_keys=True, ensure_ascii=False)
+
+    else:
+        # Run as MCP server with stdio transport
+        mcp.run(transport="stdio")
+

@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "mcp-trainer": {
+      "command": "/bin/bash",
+      "args": [
+        "-lc",
+        "cd /Users/gshiva/claude/mcp && uv run server_mcp.py"
+      ],
+      "env": {
+        "UV_PYTHON": "python3"
+      }
+  }
+}
+
+}

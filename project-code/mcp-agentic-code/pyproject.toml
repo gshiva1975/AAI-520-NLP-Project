@@ -19,6 +19,7 @@ dependencies = [
     "matplotlib",
     "wordcloud",
     "duckduckgo-search",
+    "chromadb>=0.5",        # vector DB (local persistent store)
     "rich"
 ]
 

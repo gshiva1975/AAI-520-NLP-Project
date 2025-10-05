@@ -1,0 +1,173 @@
+<frozen importlib._bootstrap>:241: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+<frozen importlib._bootstrap>:241: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+Device set to use mps:0
+Device set to use mps:0
+Device set to use mps:0
+No model was supplied, defaulted to distilbert/distilbert-base-uncased-finetuned-sst-2-english and revision 714eb0f (https://huggingface.co/distilbert/distilbert-base-uncased-finetuned-sst-2-english).
+Using a pipeline without specifying a model name and revision in production is not recommended.
+Device set to use mps:0
+────────────────────────────────────────────────────── Analysis • AAPL ──────────────────────────────────────────────────────
+╭────────────────────────────────────────────────────── AAPL Summary ───────────────────────────────────────────────────────╮
+│ Ticker: AAPL                                                                                                              │
+│ Last Close: 258.0199890136719                                                                                             │
+│ Daily Change: 0.35%                                                                                                       │
+│ P/E Ratio: 39.212765                                                                                                      │
+│ Recommendation: Sell                                                                                                      │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+                                                Recent News & Sentiment                                                 
+                                                                                                                        
+  #   Headline                                                                                               Sentiment  
+ ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
+  1   Jefferies downgrades Apple stock to Underperform on iPhone 18 concerns - Investing.com                 negative   
+  2   Will Apple (AAPL) Beat Estimates Again in Its Next Earnings Report? - Yahoo Finance                    negative   
+  3   How can Apple’s stock reach $300? Wall Street is already dreaming about the iPhone 18. - MarketWatch   negative   
+  4   Apple gets rating cut at Jefferies on 'excessive expectations' on iPhone - Seeking Alpha               negative   
+  5   Farrell Financial LLC Reduces Stock Holdings in Apple Inc. $AAPL - MarketBeat                          negative   
+                                                                                                                        
+ Saved price chart: visuals/price_history_AAPL.png
+ Saved sentiment chart: visuals/sentiment_AAPL.png
+Draft: Investing.com Will Apple (AAPL) Beat Estimates Again in Its Next Earnings Report? - Yahoo Finance How can Apple’s 
+stock reach $300? Wall Street is already dreaming about the iPhone 18.
+Critique: Critique: Investing.com Will Apple (AAPL) Beat Estimates Again in Its Next Earnings Report? - Yahoo Finance How can
+Apple’s stock reach $300? Wall Street is already dreaming about the iPhone 18. Wall Street is already dreaming about the 
+iPhone 18. Wall Street is already dreaming about the iPhone 18. Wall Street is already dreaming about the iPhone 18. Wall 
+Street is already dreaming about the iPhone 18. Wall Street is already dreaming about the iPhone 18. Wall Street is already 
+dreaming about the iPhone 18. Wall Street is already dreaming about the iPhone 18. Wall Street is already dreaming about the 
+iPhone 18. Wall Street is already dreaming about the iPhone 18. Wall Street is already dreaming about the iPhone 18. Wall 
+Street is already dreaming about the iPhone 18. Wall Street is already dreaming about the iPhone 18. Wall Street is already 
+dreaming about the iPhone 18. Wall Street is already dreaming about the iPhone 18. Wall Street is already dreaming about the 
+iPhone 18. Wall Street is already dreaming about the iPhone 18. Wall Street is already dreaming about the iPhone 18. Wall 
+Street is already dreaming about the iPhone 18. Wall Street is already dreaming about the iPhone 18. Wall Street is already 
+dreaming about the iPhone 18. Wall Street is already dream
+Final Summary: Wall Street is already dreaming about the iPhone 18. Wall Street is already dreaming about the iPhone 18. Wall
+Street is already dreaming about the iPhone 18. Wall Street is already dreaming about the iPhone 18. Wall Street is already 
+dreaming about the iPhone 18. Wall Street is already dreaming about the iPhone 19. Wall Street is already dreaming about the 
+iPhone 20. Wall Street is already dreaming about the iPhone 20. Wall Street is already dreaming about the iPhone 20. Wall 
+Street is already dreaming about the iPhone 20. Wall Street is already dreaming about the iPhone 20. Wall Street is already 
+dreaming about the iPhone 20. Wall Street is already dreaming about the iPhone 20. Wall Street is already dreaming about the 
+iPhone 20. Wall Street is already dreaming about the iPhone 20. Wall Street is already dreaming about the iPhone 20. Wall 
+Street is already dreaming about the iPhone 20. Wall Street is already dreaming about the iPhone 20. Wall Street is already 
+dreaming about the iPhone 20. Wall Street is already dreaming about the iPhone 20. Wall Street is already dreaming about the 
+iPhone 20. Wall Street is already dreaming about the iPhone 20. Wall Street is already dreaming about the iPhone 20. Wall 
+Street is already dreaming about the iPhone
+─────────────────────────────────────────────────────────── done ────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────── Analysis • TSLA ──────────────────────────────────────────────────────
+╭────────────────────────────────────────────────────── TSLA Summary ───────────────────────────────────────────────────────╮
+│ Ticker: TSLA                                                                                                              │
+│ Last Close: 429.8299865722656                                                                                             │
+│ Daily Change: -1.42%                                                                                                      │
+│ P/E Ratio: 252.84116                                                                                                      │
+│ Recommendation: Sell                                                                                                      │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+                                                   Recent News & Sentiment                                                   
+                                                                                                                             
+  #   Headline                                                                                                    Sentiment  
+ ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
+  1   Tesla Stock Falls Despite Record Q3 Deliveries Of 497,099 On Expiring EV Tax Credits - Investor's           negative   
+      Business Daily                                                                                                         
+  2   Analysts Say “Buy” Tesla Stock (TSLA) After Robust Q3 Deliveries - TipRanks                                 negative   
+  3   Why Tesla (TSLA) Stock Is Trading Lower Today - Yahoo Finance                                               negative   
+  4   Tesla had blowout quarter for sales of new cars. Why the EV stock fell sharply anyway - CNBC                negative   
+  5   Tesla Q3 Deliveries Reach Record Levels: Is TSLA Stock a Buy? - Zacks Investment Research                   negative   
+                                                                                                                             
+ Saved price chart: visuals/price_history_TSLA.png
+ Saved sentiment chart: visuals/sentiment_TSLA.png
+Draft: Tesla Stock Falls Despite Record Q3 Deliveries Of 497,099 On Expiring EV Tax Credits
+Critique: Tesla Stock Falls Despite Record Q3 Deliveries Of 497,099 On Expiring EV Tax Credits
+Final Summary: Tesla Stock Falls Despite Record Q3 Deliveries Of 497,099 On Expiring EV Tax Credits Tesla Stock Falls Despite
+Record Q3 Deliveries Of 497,099 On Expiring EV Tax Credits Tesla Stock Falls Despite Record Q3 Deliveries Of 497,099 On 
+Expiring EV Tax Credits Tesla Stock Falls Despite Record Q3 Deliveries Of 497,099 On Expiring EV Tax Credits Tesla Stock 
+Falls Despite Record Q3 Deliveries Of 497,099 On Expiring EV Tax Credits Tesla Stock Falls Despite Record Q3 Deliveries Of 
+497,099 On Expiring EV Tax Credits Tesla Stock Falls Despite Record Q3 Deliveries Of 497,099 On Expiring EV Tax Credits Tesla
+Stock Falls Despite Record Q3 Deliveries Of 497,099 On Expiring EV Tax Credits Tesla Stock Falls Despite Record Q3 Deliveries
+Of 497,099 On Expiring EV Tax Credits Tesla Stock Falls Despite Record Q3 Deliveries Of 497,099 On Expiring EV Tax Credits 
+Tesla Stock Falls Despite Record
+─────────────────────────────────────────────────────────── done ────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────── Analysis • MSFT ──────────────────────────────────────────────────────
+╭────────────────────────────────────────────────────── MSFT Summary ───────────────────────────────────────────────────────╮
+│ Ticker: MSFT                                                                                                              │
+│ Last Close: 517.3499755859375                                                                                             │
+│ Daily Change: 0.31%                                                                                                       │
+│ P/E Ratio: 37.98458                                                                                                       │
+│ Recommendation: Sell                                                                                                      │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+                                             Recent News & Sentiment                                              
+                                                                                                                  
+  #   Headline                                                                                         Sentiment  
+ ──────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
+  1   “…Make it Less Confusing”: Microsoft Stock (NASDAQ:MSFT) Dips Over Copilot Concerns - TipRanks   negative   
+  2   Analysts Keep Raising Price Targets For Microsoft Stock - MSFT Is Still Cheap - Barchart.com     negative   
+  3   Microsoft’s stock now looks like ‘free money,’ an analyst says. Here’s why. - MarketWatch        negative   
+  4   Stocks to Gain From Quantum Computing in 2025: MSFT, IBM, QBTS, IONQ - Yahoo Finance             negative   
+  5   Microsoft Stock Investors Are Growing More Concerned - The Motley Fool                           negative   
+                                                                                                                  
+ Saved price chart: visuals/price_history_MSFT.png
+ Saved sentiment chart: visuals/sentiment_MSFT.png
+Draft: Microsoft’s stock now looks like ‘free money,’ an analyst says. Here’s why.
+Critique: Microsoft’s stock has soared in the past few months, but analysts say it’s a sign that the company’s stock market 
+is booming.
+Final Summary: Microsoft’s stock has soared in the past few months, but analysts say it’s a sign that the company’s stock 
+market is booming.
+─────────────────────────────────────────────────────────── done ────────────────────────────────────────────────────────────
+───────────────────────────────────────────────────── Analysis • GOOGL ──────────────────────────────────────────────────────
+╭────────────────────────────────────────────────────── GOOGL Summary ──────────────────────────────────────────────────────╮
+│ Ticker: GOOGL                                                                                                             │
+│ Last Close: 245.35000610351562                                                                                            │
+│ Daily Change: -0.14%                                                                                                      │
+│ P/E Ratio: 26.12886                                                                                                       │
+│ Recommendation: Sell                                                                                                      │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+                                               Recent News & Sentiment                                                
+                                                                                                                      
+  #   Headline                                                                                             Sentiment  
+ ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
+  1   Morgan Stanley Raises PT on Alphabet (GOOGL) Stock - Yahoo Finance                                   negative   
+  2   Alphabet's Implied EPS Growth Expectations: Realistic Or Bubble? - Seeking Alpha                     negative   
+  3   Alphabet: After Its Best Quarter in Decades, Is It Time to Buy? - MarketBeat                         negative   
+  4   Alphabet’s stock is now beloved on Wall Street. Here’s what matters next for Google. - MarketWatch   positive   
+  5   Alphabet Stock (GOOGL) Down as Perplexity Plans Free Version of Its $200 AI Browser - TipRanks       negative   
+                                                                                                                      
+ Saved price chart: visuals/price_history_GOOGL.png
+ Saved sentiment chart: visuals/sentiment_GOOGL.png
+Draft: MarketWatch Alphabet Stock (GOOGL) Down as Perplexity Plans Free Version of Its $200 AI Browser
+Critique: MarketWatch Alphabet Stock (GOOGL) Down as Perplexity Plans Free Version of Its $200 AI Browser
+Final Summary: MarketWatch Alphabet Stock (GOOGL) down as Perplexity Plans Free Version of Its $200 AI Browser
+─────────────────────────────────────────────────────────── done ────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────── Analysis • AMZN ──────────────────────────────────────────────────────
+╭────────────────────────────────────────────────────── AMZN Summary ───────────────────────────────────────────────────────╮
+│ Ticker: AMZN                                                                                                              │
+│ Last Close: 219.50999450683594                                                                                            │
+│ Daily Change: -1.3%                                                                                                       │
+│ P/E Ratio: 33.46189                                                                                                       │
+│ Recommendation: Sell                                                                                                      │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+                                                   Recent News & Sentiment                                                   
+                                                                                                                             
+  #   Headline                                                                                                    Sentiment  
+ ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
+  1   Top Goldman Sachs Analyst Lifts Amazon Stock (AMZN) Price Target, Says it’s a ‘Preferred’ Large Cap -       negative   
+      TipRanks                                                                                                               
+  2   AI Cloud Concerns Hover Over Amazon Stock. But Analyst Says Don't Forget This 'Crown Jewel.' - Investor's   positive   
+      Business Daily                                                                                                         
+  3   Analyst Explains Why Amazon.com (AMZN) Stock Can Move ‘Quite a Bit Higher’ Soon - Yahoo Finance             negative   
+  4   Best Stock to Buy Right Now: Amazon vs. Alphabet - The Motley Fool                                          negative   
+  5   Goldman says AWS strength underappreciated, raises Amazon price target - Investing.com                      positive   
+                                                                                                                             
+ Saved price chart: visuals/price_history_AMZN.png
+ Saved sentiment chart: visuals/sentiment_AMZN.png
+Draft: Investor's Business Daily Analyst Explains Why Amazon.com (AMZN) Stock Can Move ‘Quite a Bit Higher’ Soon - Yahoo 
+Finance Best Stock to Buy Right Now: Amazon vs. Alphabet - The Motley Fool Goldman says AWS strength underappreciated, raises
+Amazon price target
+Critique: Amazon.com (AMZN) Stock Can Move ‘Quite a Bit Higher’ Soon - Yahoo Finance Best Stock to Buy Right Now: Amazon vs. 
+Alphabet - The Motley Fool Goldman says AWS strength underappreciated, raises Amazon price target
+Final Summary: Amazon.com (AMZN) Stock Can Move ‘Quite a Bit Higher’ Soon - Yahoo Finance Best Stock to Buy Right Now: Amazon
+vs. Alphabet - The Motley Fool Goldman says AWS strength underappreciated, raises Amazon price target
+─────────────────────────────────────────────────────────── done ────────────────────────────────────────────────────────────
+ Saved portfolio chart: visuals/portfolio_summary.png
+───────────────────────────────────────────────────── Portfolio Summary ─────────────────────────────────────────────────────
+AAPL: Sell
+TSLA: Sell
+MSFT: Sell
+GOOGL: Sell
+AMZN: Sell
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute

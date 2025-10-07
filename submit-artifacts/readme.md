@@ -14,3 +14,6 @@ Persistent memory
 This project contributes to advancing responsible and explainable AI applications in financial research.
 
 
+Installation Steps
+
+uv run server_mcp.py

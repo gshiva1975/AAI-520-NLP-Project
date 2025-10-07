@@ -1,0 +1,30 @@
+[project]
+name = "investment-mcp-server"
+version = "0.1.0"
+description = "MCP server for investment analysis with Flan-T5 and FinBERT"
+authors = [{ name = "You", email = "you@example.com" }]
+requires-python = ">=3.11"
+
+dependencies = [
+    "yfinance",
+    "transformers",
+    "torch",
+    "fastmcp",
+    "pytoml",
+    "feedparser>=6.0.10",
+    "langgraph",
+    "langchain",
+    "langchain-community",
+    "langchain_huggingface",
+    "matplotlib",
+    "wordcloud",
+    "duckduckgo-search",
+    "chromadb>=0.5",        # vector DB (local persistent store)
+    "rich"
+]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest",
+]
+

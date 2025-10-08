@@ -5,12 +5,19 @@
 **The system will be built on a modular MCP (Model Context Protocol) client–server framework, providing extensibility, transparency, and adaptability.**
 
 Core Capabilities
+
 Stock data retrieval
+
 News ingestion with sentiment analysis
+
 Dynamic task routing
+
 Prompt chaining
+
 Evaluator–optimizer loops
+
 Persistent memory
+
 
 **This project contributes to advancing responsible and explainable AI applications in financial research.**
 
